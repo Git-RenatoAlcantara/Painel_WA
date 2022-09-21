@@ -69,18 +69,23 @@ class DBController {
     }
 
     function pegar_token_acesso($mysqli){
+        
+        try {
 
-        $sql = "SELECT * FROM WAConexao";
-        $result = $mysqli->query($sql);
-        if ($result->num_rows > 0) {
-           while($row = $result->fetch_assoc()) {
-               return $row["token"];           
-           }
-        } else {
-          return '';
+            $sql = "SELECT * FROM WAConexao";
+            $result = $mysqli->query($sql);
+            if ($result->num_rows > 0) {
+               while($row = $result->fetch_assoc()) {
+                   return $row["token"];           
+               }
+            }
+            mysqli_free_result($result);
+            $mysqli->close();
+            
+        } catch (\Throwable $th) {
+            return;
         }
-        mysqli_free_result($result);
-        $mysqli->close();
+       
 
     }
 

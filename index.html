@@ -139,16 +139,15 @@
 
                 add_dispositivo.addEventListener('click', function(event){
 
-                    const cell = document.querySelector('#input-cel').value;
+            
                     const link_message_bot = document.querySelector('#link-message-bot').value;
 
-                    if( cell.length > 0 && link_message_bot.length > 0 ){
+                    if( link_message_bot.length > 0 ){
                         add_dispositivo.innerText = '';
                         add_dispositivo.classList.add('spinner-grow');
                         
                         axios.post('/WhatsappWebAPI/api.php',  {
                             message: 'adicionar',
-                            celular: document.querySelector('#input-cel').value,
                             link_message_bot:  document.querySelector('#link-message-bot').value
                         })
                         .then((response) => {

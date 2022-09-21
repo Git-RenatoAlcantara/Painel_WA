@@ -37,9 +37,12 @@ function instance_init($link_message_bot){
 
     $response = request('https://n00nessh.xyz/instance/init', 'GET');
     $convert = json_decode($response, true);
-    //$url = 'https://n00nessh.xyz/instance/init?key='.$convert["key"].'&webhook=true&webhookUrl='.$link_message_bot.'';
-    
-    return  $convert['error'] == true ?  $convert : array('url' =>  $url, 'key' => $convert["key"]);
+    if($convert["error"]){
+
+        return $convert;
+    }
+    $url = 'https://n00nessh.xyz/instance/init?key='.$convert["key"].'&webhook=true&webhookUrl='.$link_message_bot.'';
+    return array('url' =>  $url, 'key' => $convert["key"]);
 
 }
 
@@ -54,7 +57,7 @@ function request($url, $method){
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($curl, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json' , 
-        "Authorization: Bearer " )); // Inject the token into the header
+        "Authorization: Bearer 91bf3798-4a19-48b0-af47-db85b5e86cbc" )); // Inject the token into the header
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER , true);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
@@ -131,23 +134,15 @@ case 'POST':
                     $mysqli = $db->connect();
                     $db_controller = new DBController();
 
+                    $db_controller->criar_tabela($mysqli);
                     if($mysqli->connect_errno){
                         echo json_encode(array('error' => true, 'message' => "Falha ao acessar o banco de dados."));
                         return;
                     }
 
                     header("Content-Type: application/json"); 
-                   // Gerado qrcode
-                   
-                    $celular = $post["celular"];
+                    // Gerado qrcode
                     $link_message_bot = $post["link_message_bot"];
-                    $db_controller->criar_tabela($mysqli);
-                    $query = 'UPDATE WAConexao SET cel = "'.$celular.'" WHERE id = "1"';
-                    
-                    if(!$mysqli->query($query)){
-                        echo json_encode(array('error' => true, 'message' => "Falha ao salvar url no banco de dados."));
-                        return;
-                    }
 
                     $key = $db_controller->pegar_token_acesso($mysqli);
                     if(!empty($key)){
@@ -156,28 +151,26 @@ case 'POST':
                     }
                     
                     $whatsapp_connect = instance_qrcode($link_message_bot);
-                    if($whatsapp_connect['error'] == true){
+
+
+
+                    if($whatsapp_connect['error']){
                         echo json_encode($whatsapp_connect);
                         return;
                     }
 
-                    // Salvar key e a url de webhook responsavel por receber as mensagens e responder o chat
-                    $keyStatus = salvarKey($whatsapp_connect["key"], $mysqli, $db_controller);
-                    $query = 'UPDATE WAConexao SET urlChat = "'.$link_message_bot.'" WHERE id = "1"';
-                    if(!$mysqli->query($query)){
-                        echo json_encode(array('error' => true, 'message' => "Falha ao salvar url no banco de dados."));
-                        return;
+                    if(!$whatsapp_connect["error"]){
+                         // Salvar key e a url de webhook responsavel por receber as mensagens e responder o chat
+                        $keyStatus = salvarKey($whatsapp_connect["key"], $mysqli, $db_controller);
+                        $query = 'UPDATE WAConexao SET urlChat = "'.$link_message_bot.'" WHERE id = "1"';
+                        if(!$mysqli->query($query)){
+                            echo json_encode(array('error' => true, 'message' => "Falha ao salvar url no banco de dados."));
+                            return;
+                        }
                     }
 
-                    
-                    
-                    $whatsapp_connect['numero'] = $celular;
-                    $token = $db_controller->pegar_token_acesso($mysqli);
-
-                    $whatsapp_connect['mercadopago'] = 'https://n00nessh.xyz/payment?key='.$token.'&number='.$celular.'';
-
                     echo json_encode($whatsapp_connect);
-                    
+                
                 break;
             case "iniciar":
 
