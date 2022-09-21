@@ -30,6 +30,8 @@ class DBController {
         }
         return false;
     }
+
+    
     function inserir_token($key, $conn){
         $query = "INSERT INTO WAConexao(token) VALUES ('$key')";
         if ($conn->query($query) === TRUE){
@@ -43,7 +45,7 @@ class DBController {
         if ($conn->query($query) === TRUE) return true;
     }
 
-    function inserir_webhook_chat($url_chat, $mysqli){
+    function inserir_bot_chat($url_chat, $mysqli){
         $query = "INSERT INTO WAConexao(urlChat) VALUES ('$url_chat')";
         if ($mysqli->query($query) === TRUE){
             return true;

@@ -20,7 +20,11 @@ function saveMessage($data){
 function instance_qrcode($link_message_bot){
 
     $instance = instance_init($link_message_bot);
-    if($instance["error"]) return $instance; 
+    if($instance['error'] === TRUE){
+        echo json_encode(array($instance));
+        return;
+    }
+    
      sleep(2);
     $gerar_qrcode = request($instance["url"], 'GET');
     $recebe_link_qrcode = json_decode($gerar_qrcode, true);
@@ -29,7 +33,7 @@ function instance_qrcode($link_message_bot){
     $base64 = request($recebe_link_qrcode["qrcode"]["url"], 'GET');
     sleep(5);
     $convert_base64 = json_decode($base64, true);
-    return array('code' => $convert_base64["qrcode"], 'key' => $key, 'numero' => '', 'mercadopago' => '');
+    return array('error' => false, 'code' => $convert_base64["qrcode"], 'key' => $key, 'numero' => '', 'mercadopago' => '');
 
 }
 
@@ -42,7 +46,7 @@ function instance_init($link_message_bot){
         return $convert;
     }
     $url = 'https://n00nessh.xyz/instance/init?key='.$convert["key"].'&webhook=true&webhookUrl='.$link_message_bot.'';
-    return array('url' =>  $url, 'key' => $convert["key"]);
+    return array('error' => false,'url' =>  $url, 'key' => $convert["key"]);
 
 }
 
@@ -129,18 +133,19 @@ case 'POST':
    if(isset($post["message"])){
         switch($post["message"]){
             case "adicionar":
-
+                    header("Content-Type: application/json"); 
+                    
                     $db = new DatabaseConnect();
                     $mysqli = $db->connect();
                     $db_controller = new DBController();
 
-                    $db_controller->criar_tabela($mysqli);
                     if($mysqli->connect_errno){
                         echo json_encode(array('error' => true, 'message' => "Falha ao acessar o banco de dados."));
                         return;
                     }
 
-                    header("Content-Type: application/json"); 
+                    $db_controller->criar_tabela($mysqli);
+                  
                     // Gerado qrcode
                     $link_message_bot = $post["link_message_bot"];
 
@@ -153,21 +158,13 @@ case 'POST':
                     $whatsapp_connect = instance_qrcode($link_message_bot);
 
 
-
-                    if($whatsapp_connect['error']){
+                    if($whatsapp_connect['error'] === TRUE){
                         echo json_encode($whatsapp_connect);
                         return;
                     }
 
-                    if(!$whatsapp_connect["error"]){
-                         // Salvar key e a url de webhook responsavel por receber as mensagens e responder o chat
-                        $keyStatus = salvarKey($whatsapp_connect["key"], $mysqli, $db_controller);
-                        $query = 'UPDATE WAConexao SET urlChat = "'.$link_message_bot.'" WHERE id = "1"';
-                        if(!$mysqli->query($query)){
-                            echo json_encode(array('error' => true, 'message' => "Falha ao salvar url no banco de dados."));
-                            return;
-                        }
-                    }
+                    //$query = 'UPDATE WAConexao SET urlChat = "'.$link_message_bot.'" WHERE id = "1"';
+                    //echo json_encode(array('error' => true, 'message' => "Falha ao salvar url no banco de dados."));
 
                     echo json_encode($whatsapp_connect);
                 
@@ -182,6 +179,7 @@ case 'POST':
                         echo json_encode(array('error' => true, 'message' => "Falha ao acessar o banco de dados."));
                         return;
                     }
+
                     $key = $db_controller->pegar_token_acesso($mysqli);
                     $url_chat =  $db_controller->pegar_webhook_chat($mysqli);
 
