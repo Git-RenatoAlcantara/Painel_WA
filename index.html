@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+  </head>
+    <body class="bg-dark">
+        <style>
+            .nav-tabs .nav-link.active {
+                background-color: #00cded;
+                color: white;
+            }
+        </style>
+        <div class="container-fluid">
+
+            <ul class="nav nav-tabs justify-content-center mt-2" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link link-secondary active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Adicionar WhatsApp</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link link-secondary" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Adicionar conta SSH</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button onclick="buscar_mercadopago();" class="nav-link link-secondary" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Info</button>
+                </li>
+              
+            </ul>
+            <div class="mt-2" id="alert-status">
+                        
+            </div>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+
+                  
+                   
+                   <div class="row">
+                      
+                        <div class="col">
+                        
+                        </div>
+                        <div class="col">
+                        
+                        <center>
+                            
+                            <div class="shadow-sm p-3 mb-5 bg-body rounded bg-light mt-2 col" style="height: 290px; width: 290px;" id="qrcode">
+                            
+                            </div>
+                        </center>
+                        </div>
+                        <div class="col"></div>
+                        <div class="row">
+                            <div class="col"></div>
+                            <div class="col-sm-12 col-xs-12 col-md-6">
+                            <center>
+                                
+                                    <div class="input-group w-50 ml-5" style="margin-left: 4%">
+                                        <span class="input-group-text" id="celular">Link do Bot</span>
+                                        <input type="text"  id="link-message-bot" class="form-control col-sm-12 border-info placeholder="https://seusite/BotMessage.php" aria-label="Username" aria-describedby="celular" required>
+                                    </div>
+                                    <button type="button" id="add-dispositivo" class="btn btn-outline-dark btn-info fw-bold text-white col-4 mt-2 ml-2" style="margin-left: 3%">Adicionar</button>
+                            </center>
+                            </div>
+                            <div class="col"></div>
+                        </div>
+
+                   </div>
+                </div>
+                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                    <div id="form-ssh" class="row mt-5">
+                        <div class="col"></div>
+                        <div class="col">
+                            <div class="card text-bg-info">
+                                <div class="card-header">
+                                    Dados de acesso ao seu ssh
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1">IP</span>
+                                        <input type="text" class="form-control" id="ip" placeholder="127.0.0.1" aria-label="Username" aria-describedby="basic-addon1">
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1">Senha</span>
+                                        <input type="text" id="senha" class="form-control" placeholder="****" aria-label="Username" aria-describedby="basic-addon1">
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1">Usuario</span>
+                                        <input type="text" id="usuario" class="form-control" placeholder="root" aria-label="Username" aria-describedby="basic-addon1">
+                                    </div>
+                                    <div class="d-grid gap-1">
+                                        <button id="btn-salvar-ssh" type="button col-12" class="btn btn-warning">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col"></div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="table-tab-pane" role="tabpanel" aria-labelledby="table-tab" tabindex="0">
+                    <div id="table-info" class="row mt-5 ml-5 text-white">
+                        <div class="col"></div>
+                        <div class="col">
+                            <div class="input-group flex-nowrap ">
+                                <span class="input-group-text" id="addon-wrapping">Mercado Pago</span>
+                                <input type="text" id="mp-link" class="form-control col-6" placeholder="https://mercadopago.com.br" aria-label="Username" aria-describedby="addon-wrapping">
+                            </div>
+                        </div>
+                        <div class="col"></div>
+                    </div>
+                </div>
+            </div>
+           <!-- Modal -->
+        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Acesso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                ...
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <script>
+            function adicionar_dipositivo(){
+
+                const add_dispositivo = document.querySelector('#add-dispositivo');
+
+                add_dispositivo.addEventListener('click', function(event){
+
+                    const cell = document.querySelector('#input-cel').value;
+                    const link_message_bot = document.querySelector('#link-message-bot').value;
+
+                    if( cell.length > 0 && link_message_bot.length > 0 ){
+                        add_dispositivo.innerText = '';
+                        add_dispositivo.classList.add('spinner-grow');
+                        
+                        axios.post('/WhatsappWebAPI/api.php',  {
+                            message: 'adicionar',
+                            celular: document.querySelector('#input-cel').value,
+                            link_message_bot:  document.querySelector('#link-message-bot').value
+                        })
+                        .then((response) => {
+                            console.log(response.data);
+                            const old_img = document.querySelector('img');
+                            if(old_img != null) old_img.remove();
+                            const data = JSON.stringify(response.data);
+                        
+                            if(JSON.parse(data).error){
+                               error(JSON.parse(data).message);
+                               add_dispositivo.classList.remove('spinner-grow');
+                               add_dispositivo.innerText = 'Adicionar';
+                            }else{
+                                const qrcode = JSON.parse(data).code
+                                const mp = JSON.parse(data).mercadopago;
+                                if(qrcode.length > 0){
+                                    
+                                    const img = document.createElement('img');
+                                    img.setAttribute('src', qrcode);
+                                    img.style.marginLeft = "-10px";
+                                    img.style.marginTop = "-5px";
+                                    document.getElementById('qrcode').appendChild(img);
+                                    add_dispositivo.innerText = "Adicionar";
+                                    
+
+                                    const link_mercado = document.getElementById('link-mercado')
+                                    link_mercado.classList.add('user-select-all')
+                                    link_mercado.appendChild(document.createTextNode(mp))
+
+                                    add_dispositivo.classList.remove('spinner-grow');
+                                    add_dispositivo.innerText = 'Adicionar';
+                                }
+
+                            }
+
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                    }
+                
+                })
+            }
+
+        
+
+            function error(message){
+
+                const alert_status = document.querySelector("#alert-status");
+                alert_status.classList.add('alert');
+                alert_status.classList.add('alert-danger');
+                alert_status.classList.add('text-center');
+                alert_status.classList.add('fw-bold');
+                alert_status.appendChild(document.createTextNode(message));
+                setTimeout(() => {
+                    hideAlert('alert-danger');
+                }, 15000);
+            }
+
+            function success(message){
+                const alert_status = document.querySelector("#alert-status");
+                alert_status.classList.add('alert');
+                alert_status.classList.add('alert-success');
+                alert_status.classList.add('text-center');
+                alert_status.classList.add('fw-bold');
+                alert_status.appendChild(document.createTextNode(message));
+                setTimeout(() => {
+                    hideAlert('alert-success');
+                }, 15000);
+            }
+
+            function hideAlert($status){
+                const alert_status = document.querySelector("#alert-status");
+                alert_status.classList.remove('alert')
+                alert_status.classList.remove($status)
+                alert_status.classList.remove('text-center');
+                alert_status.classList.remove('fw-bold')
+                alert_status.removeChild();
+            }
+            function salvar_ssh(){
+                const btn_salvar_ssh = document.getElementById("btn-salvar-ssh");
+                btn_salvar_ssh.addEventListener('click', async function(){
+         
+                    
+                    const ip = document.querySelector("#ip").value;
+                    const senha = document.querySelector("#senha").value;
+                    const usuario = document.querySelector("#usuario").value;
+                    //if(!ip.length > 0 && !senha > 0 && !usuario > 0 ) empty("Nenhum campo pode ficar vazio!");
+                    
+                    if(ip.length != 0 && senha.length != 0 && usuario.length != 0){
+                        btn_salvar_ssh.classList.add('spinner-grow');
+                        btn_salvar_ssh.innerText = '';
+                        
+                        axios.post('/WhatsappWebAPI/api.php',  {
+                            message: 'acesso',
+                            ip: ip,
+                            senha: senha,
+                            usuario: usuario
+                        })
+                        .then((response) => {
+                            const data = JSON.stringify(response.data);
+                            const decode = JSON.parse(data);
+                            if(decode.error){
+                                empty(decode.message);
+                                btn_salvar_ssh.classList.remove('spinner-grow');
+                                return ;
+                            }
+                            success(decode.message);
+                            btn_salvar_ssh.innerText = "Salvar";
+                            document.querySelector("#ip").value = '';
+                            document.querySelector("#senha").value = '';
+                            document.querySelector("#usuario").value;
+                            btn_salvar_ssh.classList.remove('spinner-grow');
+                            btn_salvar_ssh.innerText = 'Salvar';
+                        });
+               
+                    }
+
+                });
+            }
+
+            function buscar_mercadopago(){
+                axios.post('/WhatsappWebAPI/api.php',  {
+                    message: 'mercadopago',
+                }).then((response) => {
+                    console.log(response.data)
+                })
+            }
+
+            (function() {
+                'use-strict'
+                window.addEventListener('load', function(){
+                adicionar_dipositivo();
+                salvar_ssh();
+                //$('#modal').modal('show')
+                }, false);
+            })();
+        </script>'
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </body>
+</html>
