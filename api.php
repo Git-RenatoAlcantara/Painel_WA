@@ -54,7 +54,7 @@ function request($url, $method){
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($curl, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json' , 
-        "Authorization: Bearer renatoalcantara2022@gmail.com" )); // Inject the token into the header
+        "Authorization: Bearer " )); // Inject the token into the header
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER , true);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
