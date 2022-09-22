@@ -4,8 +4,8 @@ class DatabaseConnect{
   function connect(){
    
    $servername = "localhost";
-   $username = "root";
-   $password = "96475870";
+   $username = "";
+   $password = "";
    $dbname   = "WADatabase";
 
   $conn = new mysqli($servername, $username, $password, $dbname);
