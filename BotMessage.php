@@ -1,15 +1,22 @@
 <?php
-include('MercadoPago.php');
-include('criarUsuario.php');
-include('DBController.php');
+//include('MercadoPago.php');
+//include('criarUsuario.php');
+include('./Controller/DBTOKEN_Controller.php');
+include('./Controller/DBSSHController.php');
+include('./Database/DB.php');
+
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 
 
 function sendMessage($id, $message){
   $db = new DatabaseConnect();
-  $db_controller = new DBToken_Controller();
-
   $mysqli = $db->connect();
+  
+  $db_controller = new DBToken_Controller();
 
   $db_token = $db_controller->get_user_token($mysqli);
   $token = json_decode($token, true);
@@ -60,12 +67,6 @@ Aqui você pode comprar e testar Internet Móvel 4G Ilimitada pelo melhor preço
 
 switch($_SERVER['REQUEST_METHOD']){
   case 'POST':
-
-      $db = new DatabaseConnect();
-      $conn = $db->connect();
-      
-      $db_controller = new DBController();
-      $token = $db_controller->pegar_token_acesso($conn);
 
       $json = file_get_contents('php://input');
   
@@ -118,7 +119,7 @@ Responda: *teste*');
           $mercadopago = new MercadoPago();
           $pedido = $mercadopago->payment();
 
-          $dbcontroller = new DB();
+          $dbcontroller = new DatabaseConnect();
           $dbcontroller->saveID($pedido["order"], $jid);
         
           sendMessage($jid, $pedido["qrcode"]);
@@ -141,13 +142,15 @@ Tempo: '.$teste["tempo"].'');
         
         $orderID = explode(':', $message)[1];
         $chatKey = explode(':', $message)[2];
-        
-
+      
 
       }
       
       break;
   case 'GET':
-  header("Content-Type: application/json");
-  echo json_encode(array('status' => true, 'method' => 'GET'));
+    
+    header("Content-Type: application/json"); 
+    echo '{"status": true, "method": "GET"}';
+    
+    break;
 }

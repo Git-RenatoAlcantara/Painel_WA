@@ -6,18 +6,10 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-function saveMessage($data){
-    
-    if(file_exists(getcwd().'/message.json')){
-        $file_pointer = fopen(getcwd().'/message.json', 'w+');
-        // writing on a file named gfg.txt
-        fwrite($file_pointer, $data);
-        fclose($file_pointer);
-    }
-}
-
 
 function instance_qrcode($link_message_bot){
+
+   
 
     $instance = instance_init($link_message_bot);
     if($instance['error'] === TRUE){
@@ -25,7 +17,7 @@ function instance_qrcode($link_message_bot){
         return;
     }
     
-     sleep(2);
+    sleep(2);
     $gerar_qrcode = request($instance["url"], 'GET');
     $recebe_link_qrcode = json_decode($gerar_qrcode, true);
     $key = $recebe_link_qrcode["key"];
@@ -38,6 +30,7 @@ function instance_qrcode($link_message_bot){
 }
 
 function instance_init($link_message_bot){
+
 
     $response = request('https://n00nessh.xyz/instance/init', 'GET');
     $convert = json_decode($response, true);
@@ -54,6 +47,16 @@ function instance_init($link_message_bot){
 
 function request($url, $method){
 
+    $db = new DatabaseConnect();
+    $db_controller = new DBToken_Controller();
+    
+    $db_token = $db_controller->get_user_token($mysqli);
+    $token = json_decode($token, true);
+
+    if($token['error']){
+        echo $db_token;
+        return;
+    }
 
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
@@ -61,7 +64,7 @@ function request($url, $method){
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($curl, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json' , 
-        "Authorization: Bearer 91bf3798-4a19-48b0-af47-db85b5e86cbc" )); // Inject the token into the header
+        'Authorization: Bearer '.$token["message"].'' )); // Inject the token into the header
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER , true);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
@@ -78,8 +81,10 @@ function request($url, $method){
 switch($_SERVER['REQUEST_METHOD'])
 {
 case 'GET': 
+    
     header("Content-Type: application/json"); 
     echo '{"status": true, "method": "GET"}';
+
 break;
 case 'POST': 
   
@@ -107,13 +112,13 @@ case 'POST':
                     $link_message_bot = $post["link_message_bot"];
 
                     $key = $DBToken_Controller->get_user_token($mysqli);
+
                     if(!empty($key)){
                         echo json_encode(array('error' => true, 'message' => 'O seu token já foi criado.'));
                         return;
                     }
                     
                     $whatsapp_connect = instance_qrcode($link_message_bot);
-
 
                     if($whatsapp_connect['error'] === TRUE){
                         echo json_encode($whatsapp_connect);
