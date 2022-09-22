@@ -117,15 +117,18 @@
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Acesso</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Autorização de acesso.</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                ...
+                    <div class="mb-3">
+                        <label for="bearer" class="form-label">Digite o seu token.</label>
+                        <input type="text" class="form-control" id="bearer" placeholder="name@example.com">
+                      </div>
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" id="btn-bearer" class="btn btn-primary">Salvar</button>
                 </div>
             </div>
             </div>
@@ -271,12 +274,55 @@
                 })
             }
 
+
+            function verficiar_bearer(){
+                axios.post('/WhatsappWebAPI/api.php',  {
+                    message: 'get_bearer',
+                })
+                .then((result) => {
+                    if(result.data.error){
+                        $('#modal').modal('show')
+                        return;
+                    }
+                    $('#modal').modal('hide')
+                
+                })
+            }
+
+            function adicionar_bearer_token(){
+
+                const btn_bearer = document.getElementById('btn-bearer');
+
+                btn_bearer.addEventListener('click', function (){
+                    
+                    const bearer = document.getElementById('bearer').value;
+                    btn_bearer.classList.add('spinner-grow');
+                    btn_bearer.innerText = '';
+
+                    if(bearer.length > 0){
+                     
+
+                        axios.post('/WhatsappWebAPI/api.php',  {
+                            message: 'insert_bearer',
+                            bearer: bearer,
+                        }).then((result) => {
+                            console.log(result.data);
+                        });
+
+                        $('#modal').modal('hide');
+                        btn_bearer.classList.remove('spinner-grow');
+                        btn_bearer.innerText = 'Salvar';
+                    }
+
+                })
+            }
             (function() {
                 'use-strict'
                 window.addEventListener('load', function(){
                 adicionar_dipositivo();
                 salvar_ssh();
-                //$('#modal').modal('show')
+                verficiar_bearer();
+                adicionar_bearer_token();
                 }, false);
             })();
         </script>'

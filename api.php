@@ -1,6 +1,6 @@
 <?php
 require('./Database/DB.php');
-require('./Controller/DBController.php');
+require('./Controller/DBTOKEN_Controller.php');
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -74,49 +74,6 @@ function request($url, $method){
     //echo $key;
 }
 
-function salvarKey($key, $conn, $db_controller){
-    if($db_controller->criar_tabela($conn))
-    {
-        if($db_controller->inserir_token($key, $conn))
-        {
-            return array("error" => false, "message" => "Sua chave de acesso foi salvo com sucesso!");
-        
-        }else
-        {
-        
-            return array("error" => true, "message" => "Houve um erro ao salvar a key de acesso.");
-        
-        }
-    
-    }else
-    {
-    
-        return array("error" => true, "message" => "Erro no banco de dados.");
-    
-    }
-}
-
-function salvar_url_chat($url_chat, $conn, $db_controller){
-    if($db_controller->criar_tabela($conn))
-    {
-        if($db_controller->inserir_webhook_chat($url_chat, $conn))
-        {
-            return array("error" => false, "message" => "Sua url para receber mensagem foi salvo com sucesso!");
-        
-        }else
-        {
-        
-            return array("error" => true, "message" => "Houve um erro ao salvar a url do chat.");
-        
-        }
-    
-    }else
-    {
-    
-        return array("error" => true, "message" => "Erro no banco de dados.");
-    
-    }
-}
 
 switch($_SERVER['REQUEST_METHOD'])
 {
@@ -137,19 +94,19 @@ case 'POST':
                     
                     $db = new DatabaseConnect();
                     $mysqli = $db->connect();
-                    $db_controller = new DBController();
+                    $DBToken_Controller = new DBToken_Controller();
 
                     if($mysqli->connect_errno){
                         echo json_encode(array('error' => true, 'message' => "Falha ao acessar o banco de dados."));
                         return;
                     }
 
-                    $db_controller->criar_tabela($mysqli);
+                    $DBToken_Controller->criar_tabela($mysqli);
                   
                     // Gerado qrcode
                     $link_message_bot = $post["link_message_bot"];
 
-                    $key = $db_controller->pegar_token_acesso($mysqli);
+                    $key = $DBToken_Controller->get_user_token($mysqli);
                     if(!empty($key)){
                         echo json_encode(array('error' => true, 'message' => 'O seu token já foi criado.'));
                         return;
@@ -163,8 +120,13 @@ case 'POST':
                         return;
                     }
 
-                    //$query = 'UPDATE WAConexao SET urlChat = "'.$link_message_bot.'" WHERE id = "1"';
-                    //echo json_encode(array('error' => true, 'message' => "Falha ao salvar url no banco de dados."));
+                    if(empty($whatsapp_connect['key'])){
+                        echo json_encode(array('error' => 'Erro ao obter o token procure o suporte.'));
+                        return;
+                    }
+
+                    $new_key = $whatsapp_connect['key'];
+                    $DBToken_Controller->insert_user_token($mysqli, $new_key);
 
                     echo json_encode($whatsapp_connect);
                 
@@ -214,24 +176,30 @@ case 'POST':
                 echo json_encode(array('error' => true, 'message' => 'Erro ao salvar acesso ssh.'));
                 break;
             
-            case "mercadopago":
+            case "get_bearer":
                 header("Content-Type: application/json"); 
 
                 $db = new DatabaseConnect();
-                $db_controller = new DBController();
+                $db_controller = new DBToken_Controller();
 
                 $mysqli = $db->connect();
-                if($mysqli->connect_errno){
-                    echo json_encode(array('error' => true, 'message' => "Falha ao acessar o banco de dados."));
-                    return;
-                }
-                $mercadopago = $db_controller->pegar_celular($mysqli);
-                if(empty($mercadopago)){
-                    echo json_encode(array('error' => true, 'message' => 'Campo vazio'));
-                    return;
-                }
-                echo json_encode(array('error' => false, 'message' => $mercadopago));
+                
+               try {
+                    echo $db_controller->get_bearer_token($mysqli);
+               } catch (\Throwable $e) {
+                    echo $e;
+               }
               break;
+            case "insert_bearer":
+        
+                $db = new DatabaseConnect();
+                $db_controller = new DBToken_Controller();
+
+                $mysqli = $db->connect();
+                echo $db_controller->insert_user_bearer($mysqli, $post["bearer"]);
+        
+               
+            break;
 
         }
     }

@@ -7,16 +7,31 @@ include('DBController.php');
 
 function sendMessage($id, $message){
   $db = new DatabaseConnect();
-  $conn = $db->connect();
-  
-  $db_controller = new DBController();
-  $token = $db_controller->pegar_token_acesso($conn);
+  $db_controller = new DBToken_Controller();
+
+  $mysqli = $db->connect();
+
+  $db_token = $db_controller->get_user_token($mysqli);
+  $token = json_decode($token, true);
+
+  $db_bearer = $db_controller->get_bearer_token($mysqli);
+  $bearer = json_decode($db_bearer, true);
+
+  if($token['error']){
+    echo $db_token;
+    return;
+  }
+
+  if($bearer['error']){
+    echo $db_bearer;
+    return;
+  }
 
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_URL,'https://n00nessh.xyz/message/text?key='.$token.'');
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-          'Authorization: Bearer renatoalcantara2022@gmail.com')); // Inject the token into the header
+          'Authorization: Bearer '.$bearer.'')); // Inject the token into the header
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
   curl_setopt($curl, CURLOPT_RETURNTRANSFER , true);
   curl_setopt($curl, CURLOPT_TIMEOUT, 0);
@@ -127,12 +142,6 @@ Tempo: '.$teste["tempo"].'');
         $orderID = explode(':', $message)[1];
         $chatKey = explode(':', $message)[2];
         
-       
-        if($chatKey == $token){
-          $dbcontroller = new DB();
-          $chatid = $dbcontroller->getChatid($pedido["order"]);
-          sendMessage($chatid, "Recebi o seu pagameto!");          
-        }
 
 
       }
