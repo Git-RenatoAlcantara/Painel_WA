@@ -48,12 +48,11 @@ class DBToken_Controller {
         if ($result->num_rows > 0) {
             // output data of each row
             while($row = $result->fetch_assoc()) {
-              if(!empty($row['bearer'])) return json_encode(array('error' => false, 'message' => $row["bearer"]));
-              return json_encode(array('error' => true, 'message' => 'Token bearer não existe.'));
+              return $row['bearer'];
             }
         }
 
-        echo json_encode(array('error' => true, 'message' => 'Token bearer não existe.'));
+        return json_encode(array('error' => true, 'message' => 'Token bearer não existe.'));
 
        /* if($result->num_rows <= 0){
             throw new Exception(json_encode(array('error' => true, 'message' => 'Token bearer não existe.')));
@@ -72,8 +71,8 @@ class DBToken_Controller {
         if ($result->num_rows > 0) {
             // output data of each row
             while($row = $result->fetch_assoc()) {
-                if(!empty($row['token'])) return json_encode(array('error' => false, 'message' => $row["token"]));
-                return json_encode(array('error' => true, 'message' => 'Token url está faltando.'));
+                return $row['token'];
+               
             }
         }
 

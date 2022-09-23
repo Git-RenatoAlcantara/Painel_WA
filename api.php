@@ -51,11 +51,11 @@ function request($url, $method){
     $db_controller = new DBToken_Controller();
 
     $mysqli = $db->connect();
-    $db_token = $db_controller->get_user_token($mysqli);
-    $token = json_decode($token, true);
+    $barear_token = $db_controller->get_bearer_token($mysqli);
 
-    if($token['error']){
-        echo $db_token;
+
+    if(empty($barear_token)){
+        echo json_encode(array('error' => true, 'message' => 'Está faltando o token de acesso'));
         return;
     }
 
@@ -65,7 +65,7 @@ function request($url, $method){
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($curl, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json' , 
-        'Authorization: Bearer '.$token["message"].'' )); // Inject the token into the header
+        'Authorization: Bearer '.$barear_token.'' )); // Inject the token into the header
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER , true);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
