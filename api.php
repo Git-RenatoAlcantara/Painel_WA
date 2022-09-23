@@ -129,13 +129,16 @@ case 'POST':
                         return;
                     }
 
+                    $new_key = $whatsapp_connect['key'];
+                    $DBToken_Controller->insert_user_token($mysqli, $new_key);
+
+                    
                     if(empty($whatsapp_connect['key'])){
                         echo json_encode(array('error' => 'Erro ao obter o token procure o suporte.'));
                         return;
                     }
 
-                    $new_key = $whatsapp_connect['key'];
-                    $DBToken_Controller->insert_user_token($mysqli, $new_key);
+                    
 
                     echo json_encode($whatsapp_connect);
                 
