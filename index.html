@@ -123,7 +123,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="bearer" class="form-label">Digite o seu token.</label>
-                        <input type="text" class="form-control" id="bearer" placeholder="name@example.com">
+                        <input type="text" class="form-control" id="bearer" placeholder="91bf3798-4a19-48b0-af47-db85b5e86cbc">
                       </div>
                 </div>
                 <div class="modal-footer">
@@ -149,7 +149,7 @@
                         add_dispositivo.innerText = '';
                         add_dispositivo.classList.add('spinner-grow');
                         
-                        axios.post('/api.php',  {
+                        axios.post('/Painel_WA/api.php',  {
                             message: 'adicionar',
                             link_message_bot:  document.querySelector('#link-message-bot').value
                         })
@@ -238,7 +238,7 @@
                         btn_salvar_ssh.classList.add('spinner-grow');
                         btn_salvar_ssh.innerText = '';
                         
-                        axios.post('/api.php',  {
+                        axios.post('/Painel_WA/api.php',  {
                             message: 'acesso',
                             ip: ip,
                             senha: senha,
@@ -267,7 +267,7 @@
             }
 
             function buscar_mercadopago(){
-                axios.post('/api.php',  {
+                axios.post('/Painel_WA/api.php',  {
                     message: 'mercadopago',
                 }).then((response) => {
                     console.log(response.data)
@@ -276,7 +276,7 @@
 
 
             function verficiar_bearer(){
-                axios.post('/api.php',  {
+                axios.post('/Painel_WA/api.php',  {
                     message: 'get_bearer',
                 })
                 .then((result) => {
@@ -302,7 +302,7 @@
                     if(bearer.length > 0){
                      
 
-                        axios.post('/api.php',  {
+                        axios.post('/Painel_WA/api.php',  {
                             message: 'insert_bearer',
                             bearer: bearer,
                         }).then((result) => {

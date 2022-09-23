@@ -49,7 +49,8 @@ function request($url, $method){
 
     $db = new DatabaseConnect();
     $db_controller = new DBToken_Controller();
-    
+
+    $mysqli = $db->connect();
     $db_token = $db_controller->get_user_token($mysqli);
     $token = json_decode($token, true);
 
@@ -92,21 +93,24 @@ case 'POST':
     $post = (array) json_decode($json);
     
     
+   
    if(isset($post["message"])){
         switch($post["message"]){
             case "adicionar":
                     header("Content-Type: application/json"); 
                     
+                  
                     $db = new DatabaseConnect();
                     $mysqli = $db->connect();
                     $DBToken_Controller = new DBToken_Controller();
-
+                
                     if($mysqli->connect_errno){
                         echo json_encode(array('error' => true, 'message' => "Falha ao acessar o banco de dados."));
                         return;
                     }
-
+                
                     $DBToken_Controller->criar_tabela($mysqli);
+
                   
                     // Gerado qrcode
                     $link_message_bot = $post["link_message_bot"];
@@ -185,24 +189,22 @@ case 'POST':
                 header("Content-Type: application/json"); 
 
                 $db = new DatabaseConnect();
-                $db_controller = new DBToken_Controller();
+                $DBToken_Controller = new DBToken_Controller();
 
                 $mysqli = $db->connect();
-                
-               try {
-                    echo $db_controller->get_bearer_token($mysqli);
-               } catch (\Throwable $e) {
-                    echo $e;
-               }
+                $DBToken_Controller->criar_tabela($mysqli);
+
+                echo $DBToken_Controller->get_bearer_token($mysqli);
+
               break;
             case "insert_bearer":
         
                 $db = new DatabaseConnect();
-                $db_controller = new DBToken_Controller();
+                $DBToken_Controller = new DBToken_Controller();
 
                 $mysqli = $db->connect();
-                echo $db_controller->insert_user_bearer($mysqli, $post["bearer"]);
-        
+                echo $DBToken_Controller->insert_user_bearer($mysqli, $post["bearer"]);
+            
                
             break;
 

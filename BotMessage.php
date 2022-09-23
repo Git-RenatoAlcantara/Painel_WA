@@ -77,7 +77,7 @@ switch($_SERVER['REQUEST_METHOD']){
       $message = strtolower($message);
       $jid = $conversation["body"]["key"]["remoteJid"];
       $name = $conversation["body"]["pushName"];
-      saveMessage($json);
+
   
       if($message == 'oi'){
         main_menu($jid, $name);

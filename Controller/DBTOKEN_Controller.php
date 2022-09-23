@@ -1,4 +1,5 @@
 <?php
+//require('./Database/DB.php');
 
 class DBToken_Controller {
 
@@ -17,8 +18,8 @@ class DBToken_Controller {
   
 
     function insert_user_token($mysqli, $token){
-
-        $query = "INSERT INTO WAConexao(id, token) VALUES (1,'".$token."')";
+        $query = 'UPDATE WAConexao SET token = "'.$token.'" WHERE id = "1"';
+       
     
         if ($mysqli->query($query) === TRUE){
             return true;
@@ -28,8 +29,9 @@ class DBToken_Controller {
     }
 
     function insert_user_bearer($mysqli, $bearer){
+        
+        $query = "INSERT INTO WAConexao(id, bearer) VALUES (1,'".$bearer."')";
 
-        $query = 'UPDATE WAConexao SET bearer = "'.$bearer.'" WHERE id = "1"';
         if ($mysqli->query($query) === TRUE){
             return json_encode(array('error' => false, 'message' => ''));
         }
@@ -37,7 +39,9 @@ class DBToken_Controller {
         return json_encode(array('error' => true, 'message' => ''));
     }
 
+
     function get_bearer_token($mysqli){
+        
         $query = 'SELECT * FROM WAConexao';
         $result = $mysqli->query($query);
 
@@ -49,7 +53,8 @@ class DBToken_Controller {
             }
         }
 
-        throw new Exception(json_encode(array('error' => true, 'message' => 'Token bearer não existe.')));
+        echo json_encode(array('error' => true, 'message' => 'Token bearer não existe.'));
+
        /* if($result->num_rows <= 0){
             throw new Exception(json_encode(array('error' => true, 'message' => 'Token bearer não existe.')));
             return;
@@ -92,12 +97,12 @@ $conn->query($query);
 */
 
 
-/*
-$db = new DatabaseConnect();
-$mysqli = $db->connect();
+//$db = new DatabaseConnect();
+//$mysqli = $db->connect();
 
-$DBToken_Controller = new DBToken_Controller();
-$DBToken_Controller->criar_tabela($mysqli);
-$DBToken_Controller->insert_user_token($mysqli, '91bf3798');
-$DBToken_Controller->isnert_user_bearer($mysqli, '123456789');
-*/
+//$DBToken_Controller = new DBToken_Controller();
+//$DBToken_Controller->criar_tabela($mysqli);
+
+//$DBToken_Controller->insert_user_token($mysqli, '91bf3798');
+//echo $DBToken_Controller->insert_user_bearer($mysqli, '123456789');
+
