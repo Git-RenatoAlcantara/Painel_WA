@@ -13,32 +13,32 @@ error_reporting(E_ALL);
 
 
 function sendMessage($id, $message){
+
   $db = new DatabaseConnect();
   $mysqli = $db->connect();
   
   $db_controller = new DBToken_Controller();
 
-  $db_token = $db_controller->get_user_token($mysqli);
-  $token = json_decode($token, true);
+  $user_token = $db_controller->get_user_token($mysqli);
 
-  $db_bearer = $db_controller->get_bearer_token($mysqli);
-  $bearer = json_decode($db_bearer, true);
+  $bearer_token = $db_controller->get_bearer_token($mysqli);
+  
 
-  if($token['error']){
-    echo $db_token;
+  if(empty($bearer_token)){
+    echo json_encode(array('error' => true, 'message' => 'Falha ao obter token de acesso para enviar a mensagem.'));
     return;
   }
 
-  if($bearer['error']){
-    echo $db_bearer;
+  if(empty($user_token)){
+    echo json_encode(array('error' => true, 'message' => 'Falha ao obter token de parametro.'));
     return;
   }
 
   $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL,'https://n00nessh.xyz/message/text?key='.$token.'');
+  curl_setopt($curl, CURLOPT_URL,'https://n00nessh.xyz/message/text?key='.$user_token.'');
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-          'Authorization: Bearer '.$bearer.'')); // Inject the token into the header
+          'Authorization: Bearer '.$bearer_token.'')); // Inject the token into the header
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
   curl_setopt($curl, CURLOPT_RETURNTRANSFER , true);
   curl_setopt($curl, CURLOPT_TIMEOUT, 0);
