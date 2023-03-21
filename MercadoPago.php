@@ -13,7 +13,7 @@ curl_setopt_array($curl, array(
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_HTTPHEADER => array(
     'Content-Type: application/json',
-    'Authorization: Bearer APP_USR-6702162676543402-063018-f604ce2bfa1461cd7876c6fb8fa395a0-484048900',
+    'Authorization: Bearer ',
   ),
   CURLOPT_CUSTOMREQUEST => 'POST',
   CURLOPT_POSTFIELDS =>'{
